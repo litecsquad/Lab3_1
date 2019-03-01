@@ -13,16 +13,21 @@
 #include <stdio.h>      //
 #include <stdlib.h>     //
 #include <i2c.h>        //
+
+
  
 //-----------------------------------------------------------------------------
 // Function Prototypes
 //-----------------------------------------------------------------------------
-void Port_Init(void);      // Initialize ports for input and output
-void PCA_Init(void);       // Initialize PCA
-void Interrupt_Init(void); //Initialize interrupts
-void PCA_ISR(void) __interrupt 9; //Initialize Timer Interrupt Service 
-void XBR0_Init(void);
-unsigned char (unsigned char n);
+void Port_Init(void);		// Initialize ports for input and output
+void PCA_Init(void);		// Initialize PCA
+void XBR0_Init(void);		//
+void Interrupt_Init(void);	//Initialize interrupts
+void PCA_ISR(void) __interrupt 9;	//Initialize Timer Interrupt Service 
+unsigned char(unsigned char n);	//
+void Drive_Motor(void);		//
+
+
 //add more !!!
 
 
@@ -30,14 +35,20 @@ unsigned char (unsigned char n);
 //-----------------------------------------------------------------------------
 // Global Variables
 //-----------------------------------------------------------------------------
-
 //__sbit __at 0x90 CEX0;  //12, P1.0
 //__sbit __at 0x92 CEX2;  //10; P1.2
 //__sbit __at 0x93 CEX3;  //11; P1.3
 __sbit __at 0x87 LED;   //15; P0.7
  
- unsigned int counts; 
- 
+unsigned int counts; 
+unsigned int MOTOR_PW = 0;
+unsigned int PW_CENTER = _____;
+unsigned int PW_RIGHT = _____;
+unsigned int PW_LEFT = _____;
+unsigned int SERVO_PW = 0;
+#define PW_MIN _____	//
+#define PW_MAX _____	//
+#define PW_NEUT _____	//
  
  
 //-----------------------------------------------------------------------------
@@ -47,15 +58,13 @@ void main(void)
 {
     //declare local variables
     
-    //initialize ports and PCA
+    //initialize board
     Sys_Init();         // System Initialization
     Port_Init();        // Initialize Ports
     PCA_Init();         // Initialize PCA
     PCA_ISR() __interrupt 9;
     XBR0_Init();
-    putchar(' ');       // the quote fonts may not copy correctly into SiLabs IDE
-    //calibrate motor speed; update speed    
-   
+	putchar(' ');       // the quote fonts may not copy correctly into SiLabs IDE
     
     //Part 1
     
@@ -70,14 +79,15 @@ void main(void)
 /***********************/
 void Port_Init(void) //Do not touch
 {
-    P1MDIN &= 0x ;    //Set analog 
-    P1MDOUT &= 0x ;     //Set analog pin 1.1 to 0
-    P1 |= 0x ;          //Set impedance of analog pin 1.1 to 1
+	//############################## fix once we have our pin-out right
+	P1MDIN &= 0x ;    //Set analog 
+	P1MDOUT &= 0x ;     //Set analog pin 1.1 to 0
+	P1 |= 0x ;          //Set impedance of analog pin 1.1 to 1
     
-    P2MDOUT &= 0xC0;    //Set Port 2 bits 0-6 to input (1100 0000)
-    P2 |= ~0xC0;        //High impedance mode
+	P2MDOUT &= 0xC0;    //Set Port 2 bits 0-6 to input (1100 0000)
+	P2 |= ~0xC0;        //High impedance mode
 
-    P3MDOUT |= 0x3F;    //Set Port 3 bits 0-5 to output (0011 1111)
+	P3MDOUT |= 0x3F;    //Set Port 3 bits 0-5 to output (0011 1111)
 }
 
 /***********************/
@@ -88,30 +98,24 @@ void Interrupt_Init(void) //Do not touch
 }
 
 /***********************/
-void Timer_Init(void)   //Do not touch
+void XBR0_Init(void)
 {
-    CKCON |= 0x08;      // Timer0 uses SYSCLK as source
-    //TMOD &= 0xFC;     // clear the 4 least significant bits
-    
-	TMOD &= 0xF0;
-	TMOD |= 0x01;       // Timer0 in mode 1 -> 16 bits ??
-	TR0 = 0;            // Stop Timer0
-    TMR0 = 0;           // Clear high & low byte of T0
+	XBR0 = 0x27;
 }
  
 /***********************/
-void Timer0_ISR(void) __interrupt 1
+void PCA_ISR(void) __interrupt 9
 {
     TF0 = 0;            //interrupt code
     counts++;           //increment global counts variable
+    //############################## check
+
 }
  
 /***********************/
-void ADC_Init(void) //Do not touch
+void PCA_Init(void)
 {
-    REF0CN = 0x03; /* Set Vref to use internal reference voltage (2.4V) */
-    ADC1CN = 0x80; /* Enable A/D converter (ADC1) */
-    ADC1CF |= 0x01; /* Set A/D converter gain to 1 */
+    //##############################
 }
 
 /***********************/
@@ -123,3 +127,7 @@ unsigned char read_AD_input(unsigned char n) // Do not touch
     while ((ADC1CN & 0x20) == 0x00); /* Wait for conversion to complete */
     return ADC1; /* Return digital value in ADC1 register */
 }
+
+
+void Drive_Motor() 	//############################## PART 1
+void Steering_Servo()	//############################## PART 2
