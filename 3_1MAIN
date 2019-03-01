@@ -1,0 +1,125 @@
+/*  Names: Reagan Wilcox, Julia Meissner, Galilea Olvera
+    Section: 4
+    Date: 3/??/2019
+    File name: LAB 3-1
+    Description:
+		This program demonstrates ###################
+*/
+
+//-----------------------------------------------------------------------------
+// Compiler Directives
+//-----------------------------------------------------------------------------
+#include <c8051_SDCC.h> //include files. This file is available online
+#include <stdio.h>      //
+#include <stdlib.h>     //
+#include <i2c.h>        //
+ 
+//-----------------------------------------------------------------------------
+// Function Prototypes
+//-----------------------------------------------------------------------------
+void Port_Init(void);      // Initialize ports for input and output
+void PCA_Init(void);       // Initialize PCA
+void Interrupt_Init(void); //Initialize interrupts
+void PCA_ISR(void) __interrupt 9; //Initialize Timer Interrupt Service 
+void XBR0_Init(void);
+unsigned char (unsigned char n);
+//add more !!!
+
+
+//###### Add all of our functions ########
+//-----------------------------------------------------------------------------
+// Global Variables
+//-----------------------------------------------------------------------------
+
+//__sbit __at 0x90 CEX0;  //12, P1.0
+//__sbit __at 0x92 CEX2;  //10; P1.2
+//__sbit __at 0x93 CEX3;  //11; P1.3
+__sbit __at 0x87 LED;   //15; P0.7
+ 
+ unsigned int counts; 
+ 
+ 
+ 
+//-----------------------------------------------------------------------------
+// Main Function
+//-----------------------------------------------------------------------------
+void main(void)
+{
+    //declare local variables
+    
+    //initialize ports and PCA
+    Sys_Init();         // System Initialization
+    Port_Init();        // Initialize Ports
+    PCA_Init();         // Initialize PCA
+    PCA_ISR() __interrupt 9;
+    XBR0_Init();
+    putchar(' ');       // the quote fonts may not copy correctly into SiLabs IDE
+    //calibrate motor speed; update speed    
+   
+    
+    //Part 1
+    
+    //Part 2
+    
+    //Part 3
+}
+
+//-----------------------------------------------------------------------------
+// SubFunctions
+//-----------------------------------------------------------------------------
+/***********************/
+void Port_Init(void) //Do not touch
+{
+    P1MDIN &= 0x ;    //Set analog 
+    P1MDOUT &= 0x ;     //Set analog pin 1.1 to 0
+    P1 |= 0x ;          //Set impedance of analog pin 1.1 to 1
+    
+    P2MDOUT &= 0xC0;    //Set Port 2 bits 0-6 to input (1100 0000)
+    P2 |= ~0xC0;        //High impedance mode
+
+    P3MDOUT |= 0x3F;    //Set Port 3 bits 0-5 to output (0011 1111)
+}
+
+/***********************/
+void Interrupt_Init(void) //Do not touch
+{
+    IE |= 0x02;         // enable Timer0 Interrupt request (by masking)
+    EA = 1;             // enable global interrupts (by sbit)
+}
+
+/***********************/
+void Timer_Init(void)   //Do not touch
+{
+    CKCON |= 0x08;      // Timer0 uses SYSCLK as source
+    //TMOD &= 0xFC;     // clear the 4 least significant bits
+    
+	TMOD &= 0xF0;
+	TMOD |= 0x01;       // Timer0 in mode 1 -> 16 bits ??
+	TR0 = 0;            // Stop Timer0
+    TMR0 = 0;           // Clear high & low byte of T0
+}
+ 
+/***********************/
+void Timer0_ISR(void) __interrupt 1
+{
+    TF0 = 0;            //interrupt code
+    counts++;           //increment global counts variable
+}
+ 
+/***********************/
+void ADC_Init(void) //Do not touch
+{
+    REF0CN = 0x03; /* Set Vref to use internal reference voltage (2.4V) */
+    ADC1CN = 0x80; /* Enable A/D converter (ADC1) */
+    ADC1CF |= 0x01; /* Set A/D converter gain to 1 */
+}
+
+/***********************/
+unsigned char read_AD_input(unsigned char n) // Do not touch
+{
+    AMX1SL = n; /* Set P1.n as the analog input for ADC1 */
+    ADC1CN = ADC1CN & ~0x20; /* Clear the “Conversion Completed” flag */
+    ADC1CN = ADC1CN | 0x10; /* Initiate A/D conversion */
+    while ((ADC1CN & 0x20) == 0x00); /* Wait for conversion to complete */
+    return ADC1; /* Return digital value in ADC1 register */
+}
