@@ -14,19 +14,15 @@
 #include <stdlib.h>     //
 #include <i2c.h>        //
 
-
- 
 //-----------------------------------------------------------------------------
 // Function Prototypes
 //-----------------------------------------------------------------------------
-void Port_Init(void);		// Initialize ports for input and output
-void PCA_Init(void);		// Initialize PCA
-void XBR0_Init(void);		//
-void Interrupt_Init(void);	//Initialize interrupts
-void PCA_ISR(void) __interrupt 9;	//Initialize Timer Interrupt Service 
-unsigned char(unsigned char n);	//
-void Drive_Motor(void);		//
-
+void Port_Init(void);			// Initialize ports for input and output
+void PCA_Init(void);			// Initialize PCA
+void XBR0_Init(void);			// Initialize XBR0s
+void PCA_ISR(void) __interrupt 9;	// Initialize Timer Interrupt Service 
+unsigned char char(unsigned char n);	//
+void Drive_Motor(void);			//
 
 //add more !!!
 
@@ -35,9 +31,7 @@ void Drive_Motor(void);		//
 //-----------------------------------------------------------------------------
 // Global Variables
 //-----------------------------------------------------------------------------
-//__sbit __at 0x90 CEX0;  //12, P1.0
-//__sbit __at 0x92 CEX2;  //10; P1.2
-//__sbit __at 0x93 CEX3;  //11; P1.3
+
 __sbit __at 0x87 LED;   //15; P0.7
  
 unsigned int counts; 
@@ -56,21 +50,28 @@ unsigned int SERVO_PW = 0;
 //-----------------------------------------------------------------------------
 void main(void)
 {
-    //declare local variables
+	//declare local variables
     
-    //initialize board
-    Sys_Init();         // System Initialization
-    Port_Init();        // Initialize Ports
-    PCA_Init();         // Initialize PCA
-    PCA_ISR() __interrupt 9;
-    XBR0_Init();
+	//initialize board
+	Sys_Init();         // System Initialization
+	Port_Init();        // Initialize Ports
+	PCA_Init();         // Initialize PCA
+	PCA_ISR() __interrupt 9;
+	XBR0_Init();
 	putchar(' ');       // the quote fonts may not copy correctly into SiLabs IDE
     
-    //Part 1
-    
-    //Part 2
-    
-    //Part 3
+	/***********************/
+	//part 1
+	/***********************/
+	
+	/***********************/
+	//part 2
+	/***********************/
+	
+	/***********************/
+	//part 3
+	/***********************/
+	
 }
 
 //-----------------------------------------------------------------------------
@@ -80,54 +81,79 @@ void main(void)
 void Port_Init(void) //Do not touch
 {
 	//############################## fix once we have our pin-out right
-	P1MDIN &= 0x ;    //Set analog 
-	P1MDOUT &= 0x ;     //Set analog pin 1.1 to 0
-	P1 |= 0x ;          //Set impedance of analog pin 1.1 to 1
+	P1MDIN &= 0x ;		//Set analog 
+	P1MDOUT &= 0x ;		//Set analog pin 1.1 to 0
+	P1 |= 0x ;		//Set impedance of analog pin 1.1 to 1
     
-	P2MDOUT &= 0xC0;    //Set Port 2 bits 0-6 to input (1100 0000)
-	P2 |= ~0xC0;        //High impedance mode
+	P2MDOUT &= 0xC0;	//Set Port 2 bits 0-6 to input (1100 0000)
+	P2 |= ~0xC0;		//High impedance mode
 
-	P3MDOUT |= 0x3F;    //Set Port 3 bits 0-5 to output (0011 1111)
+	P3MDOUT |= 0x3F;	//Set Port 3 bits 0-5 to output (0011 1111)
 }
 
 /***********************/
-void Interrupt_Init(void) //Do not touch
-{
-    IE |= 0x02;         // enable Timer0 Interrupt request (by masking)
-    EA = 1;             // enable global interrupts (by sbit)
-}
+//MOVED TO PCA_INIT 
+//void Interrupt_Init(void) //Do not touch
+//{
+//	EIE1 |= 0x08;		// enable PCA Interrupt request (by masking)/
+//	EA = 1;			// enable global interrupts (by sbit)
+//}
 
 /***********************/
 void XBR0_Init(void)
 {
-	XBR0 = 0x27;
+	XBR0 = 0x27; 		//configure XBR0 as instructed in lab3
 }
  
 /***********************/
 void PCA_ISR(void) __interrupt 9
 {
-    TF0 = 0;            //interrupt code
-    counts++;           //increment global counts variable
-    //############################## check
+	if(CF)
+	{
+		CF = 0;			//clear overflow flab
+		counts++;		//increment global counts variable
+		PCAO = _____;		// preload for 20 ms
+		//######## calculate preload value for the above
+	}
+	PCA0CN &= 0x40;	//handle other interrupts
 
 }
  
 /***********************/
 void PCA_Init(void)
 {
-    //##############################
+	PCA0CPM0 = PCA0CPM2 = PCA0CPM3 = 0xC2; //mode 0, 2, 3 in 16-bit compare mode
+   
+	PCA0CN = 0x40; //  Enable PCA counter
+    
+	PCA0MD = 0x81; //CF enabled, use SYSCLK/12
+	
+	EIE1 |= 0x08;		// enable PCA Interrupt request (by masking)
+	EA = 1;			// enable global interrupts (by sbit)
 }
 
 /***********************/
 unsigned char read_AD_input(unsigned char n) // Do not touch
 {
-    AMX1SL = n; /* Set P1.n as the analog input for ADC1 */
-    ADC1CN = ADC1CN & ~0x20; /* Clear the “Conversion Completed” flag */
-    ADC1CN = ADC1CN | 0x10; /* Initiate A/D conversion */
-    while ((ADC1CN & 0x20) == 0x00); /* Wait for conversion to complete */
-    return ADC1; /* Return digital value in ADC1 register */
+	AMX1SL = n; /* Set P1.n as the analog input for ADC1 */
+	ADC1CN = ADC1CN & ~0x20; /* Clear the “Conversion Completed” flag */
+	ADC1CN = ADC1CN | 0x10; /* Initiate A/D conversion */
+	while ((ADC1CN & 0x20) == 0x00); /* Wait for conversion to complete */
+	return ADC1; /* Return digital value in ADC1 register */
 }
 
+/***********************/
+//part1 functions
+/***********************/
+void Drive_Motor(void)
+{}
 
-void Drive_Motor() 	//############################## PART 1
-void Steering_Servo()	//############################## PART 2
+/***********************/
+//part2 functions
+/***********************/
+void Steering_Servo(void)
+{}
+
+/***********************/
+//part3 functions
+/***********************/
