@@ -40,7 +40,7 @@ void main(void)
 /********************/
 // Vary the pulsewidth based on the user input to change the speed of the drive motor.
 /********************/
-void Drive_Motor()
+void Drive_Motor(void)
 {
   char input;
   //wait for a key to be pressed
