@@ -1,23 +1,10 @@
 unsigned int MOTOR_PW = 0;
-//-----------------------------------------------------------------------------
-// Main Function PART 1
-//-----------------------------------------------------------------------------
-void main(void)
+unsigned int PW_NEUT = 2764; //1.5ms
+unsigned int PW_MIN = 2028; //1.1ms
+unsigned int PW_MAX = 3502; //1.9ms
+  
+voix main(void)
 {
-  // initialize board
-  Sys_Init();
-  putchar(‘ ‘); //the quotes in this line may not format correctly
-  Port_Init();
-  XBR0_Init();
-  PCA_Init();
-  
-  /********************/
-  for part 1 only below
-  /********************/
-  //PW_NEUT = 2764; //1.5ms
-  //PW_MIN = 2028; //1.1ms
-  //PW_MAX = 3502; //1.9ms
-  
   printf("Embedded Control Drive Motor Control\r\n"); //beginnging mesaage
   MOTOR_PW = PW_NEUT; //set motor to neutral
   while (counts < 50); //wait one second SHOULD MAKE WHINING NOISE HERE
@@ -33,6 +20,7 @@ void main(void)
   {
   Drive_Motor();
   }
+  
 }
 //-----------------------------------------------------------------------------
 // Drive_Motor function
@@ -61,4 +49,10 @@ void Drive_Motor(void)
   }
   PCA0CPL2 = 0xFFFF - MOTOR_PW;
   PCA0CPH2 = (0xFFFF - MOTOR_PW) >> 8;
+}
+void update_speed(void)
+{
+  //Update low byte of CCM2
+  //Update high byte of CCM2
+  //NOT NEEDED BECAUSE THIS HAPPENS EVERY OVERFLOW
 }
