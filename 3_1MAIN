@@ -192,6 +192,12 @@ void Drive_Motor(void)
 	PCA0CPH2 = (0xFFFF - MOTOR_PW) >> 8;
 }
 
+void update_speed(void)
+{
+  //Update low byte of CCM2
+  //Update high byte of CCM2
+  //NOT NEEDED BECAUSE THIS HAPPENS EVERY OVERFLOW ??
+}
 /***********************/
 //part2 functions
 /***********************/
