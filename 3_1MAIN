@@ -4,6 +4,11 @@
     File name: LAB 3-1
     Description:
 		This program demonstrates ###################
+		
+	good to know: 
+	65535 counts takes 35.56ms
+	5.425E-7 s/count
+	20 ms = 36864 counts => preload = 65535 - 36864 = 28672 counts
 */
 
 //-----------------------------------------------------------------------------
@@ -100,27 +105,26 @@ void Port_Init(void) //Do not touch
 //}
 
 /***********************/
-void XBR0_Init(void)
+void XBR0_Init(void) //do not touch
 {
 	XBR0 = 0x27; 		//configure XBR0 as instructed in lab3
 }
  
 /***********************/
-void PCA_ISR(void) __interrupt 9
+void PCA_ISR(void) __interrupt 9 //do not touch
 {
 	if(CF)
 	{
 		CF = 0;			//clear overflow flab
 		counts++;		//increment global counts variable
-		PCAO = _____;		// preload for 20 ms
-		//######## calculate preload value for the above
+		PCAO = 28672;		// preload for 20 ms
 	}
 	PCA0CN &= 0x40;	//handle other interrupts
 
 }
  
 /***********************/
-void PCA_Init(void)
+void PCA_Init(void) //do not touch
 {
 	PCA0CPM0 = PCA0CPM2 = PCA0CPM3 = 0xC2; //mode 0, 2, 3 in 16-bit compare mode
    
