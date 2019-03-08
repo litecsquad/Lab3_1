@@ -26,7 +26,7 @@ void Port_Init(void);			// Initialize ports for input and output
 void PCA_Init(void);			// Initialize PCA
 void XBR0_Init(void);			// Initialize XBR0s
 void PCA_ISR(void) __interrupt 9;	// Initialize Timer Interrupt Service 
-unsigned char char(unsigned char n);	//
+//unsigned char char(unsigned char n);	//
 
 void Drive_Motor(void);			//
 void Steering_Servo(void); 		//
@@ -44,14 +44,17 @@ unsigned int counts;
 //Part 1 Globals
 unsigned int MOTOR_PW = 0;
 unsigned int PW_MIN = 2028; 	//1.1ms
-unsinged int PW_MAX = 3502;	//1.9ms
+unsigned int PW_MAX = 3502;	//1.9ms
 unsigned int PW_NEUT = 2764;	//1.5ms
+unsigned char cont;
 
 //Part 2 Globals
 unsigned int SERVO_PW = 0;
-unsigned int PW_CENTER = _____;
-unsigned int PW_RIGHT = _____;
-unsigned int PW_LEFT = _____;
+unsigned int PW_CENTER;
+unsigned int PW_RIGHT;
+unsigned int PW_LEFT;
+unsigned char full;
+unsigned char x;
 
 //Part 3 Globals
  
@@ -66,7 +69,7 @@ void main(void)
 	Sys_Init();         // System Initialization
 	Port_Init();        // Initialize Ports
 	PCA_Init();         // Initialize PCA
-	PCA_ISR() __interrupt 9;
+//	PCA_ISR() __interrupt 9;
 	XBR0_Init();
 	putchar(' ');       // the quote fonts may not copy correctly into SiLabs IDE
     
@@ -79,7 +82,7 @@ void main(void)
   
   	/*JUST IN CASE: START*/
   	printf("Did the car make a whining noise? if yes, hit y");
-  	char cont;
+  	
   	cont = getchar();
   	while (cont != 'y'); // waits until user confirms motor startup
   	/*JUST IN CASE: END */
@@ -92,9 +95,25 @@ void main(void)
 	/***********************/
 	//part 2
 	/***********************/
-	printf("In Part 2, we are going to find the farthest left our wheels can go, and the farthest right they can go\r\n");
-	printf("We will start with our left\r\n");
+	printf("In Part 2, we are going to find the center point for our wheels, farthest left our wheels can go, and the farthest right they can go\r\n");
+	full = 1;
+	printf("First, turn your wheels left and right until they are centered\r\n");
+	while(full == 1)
+	{
+		Steering_Servo();
+		printf("Are your wheels centered? y if yes, n if no\r\n");
+		x = 0;
+		while(x == 0)
+		{
+			x = getchar('');
+		}
+		if x == "y"
+		{
+			full == 1;
+			PW_CENTER = PW;
+	printf("Turn your wheels left until your wheels are turned fully left\r\n");
 	full = 0;
+	}
 	while(full == 0)
 	{
 		Steering_Servo();
@@ -107,7 +126,7 @@ void main(void)
 		if x == "y"
 		{
 			full == 1;
-			Max_Left = PW;
+			PW_LEFT = PW;
 		}
 
 	}
@@ -115,7 +134,7 @@ void main(void)
 	while(full == 1)
 	{
 		Steering_Servo();
-		printf("Are your wheels turned fully right? y if yess, n if no\r\n);
+		printf("Are your wheels turned fully right? y if yes, n if no\r\n);
 		x = 0;
 		while (x == 0)
 		{
@@ -124,7 +143,7 @@ void main(void)
 		if x == "y"
 		{
 			full = 0;
-			Max_Right = PW;
+			PW_RIGHT = PW;
 		}
 	}
 	/***********************/
@@ -238,7 +257,7 @@ void update_speed(void)
 void Steering_Servo(void)
 {
 	printf("Press l or r on your keyboard to turn the wheels left or right/r/n");
-	char x = 0;
+	unsigned char x = 0;
 	while(x == 0)
 	{
 		x = getchar("");
