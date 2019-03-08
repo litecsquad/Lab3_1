@@ -92,7 +92,41 @@ void main(void)
 	/***********************/
 	//part 2
 	/***********************/
-	
+	printf("In Part 2, we are going to find the farthest left our wheels can go, and the farthest right they can go\r\n");
+	printf("We will start with our left\r\n");
+	full = 0;
+	while(full == 0)
+	{
+		Steering_Servo();
+		printf("Are your wheels turned fully left? y if yes, n if no\r\n");
+		x = 0;
+		while(x == 0)
+		{
+			x = getchar('');
+		}
+		if x == "y"
+		{
+			full == 1;
+			Max_Left = PW;
+		}
+
+	}
+	printf("Now it is time for the right\r\n");
+	while(full == 1)
+	{
+		Steering_Servo();
+		printf("Are your wheels turned fully right? y if yess, n if no\r\n);
+		x = 0;
+		while (x == 0)
+		{
+			x = getchar("");
+		}
+		if x == "y"
+		{
+			full = 0;
+			Max_Right = PW;
+		}
+	}
 	/***********************/
 	//part 3
 	/***********************/
@@ -202,8 +236,24 @@ void update_speed(void)
 //part2 functions
 /***********************/
 void Steering_Servo(void)
-{}
+{
+	printf("Press l or r on your keyboard to turn the wheels left or right/r/n");
+	char x = 0;
+	while(x == 0)
+	{
+		x = getchar("");
+	}
+	if x == "r"
+	{
+		PW += step;
 
+	}
+	if x == "l"
+	{
+		PW -= step;
+	}
+	printf("%u\r\n",PW);
+}
 /***********************/
 //part3 functions
 /***********************/
