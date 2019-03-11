@@ -55,6 +55,7 @@ unsigned int PW_RIGHT;
 unsigned int PW_LEFT;
 unsigned char full;
 unsigned char x;
+unsigned char step = 10;
 
 //Part 3 Globals
  
@@ -105,15 +106,16 @@ void main(void)
 		x = 0;
 		while(x == 0)
 		{
-			x = getchar('');
+			x = getchar();
 		}
-		if x == "y"
+		if (x == 'y')
 		{
 			full == 1;
-			PW_CENTER = PW;
+			PW_CENTER = SERVO_PW;
+		}
+	}
 	printf("Turn your wheels left until your wheels are turned fully left\r\n");
 	full = 0;
-	}
 	while(full == 0)
 	{
 		Steering_Servo();
@@ -121,12 +123,12 @@ void main(void)
 		x = 0;
 		while(x == 0)
 		{
-			x = getchar('');
+			x = getchar();
 		}
-		if x == "y"
+		if (x == 'y')
 		{
 			full == 1;
-			PW_LEFT = PW;
+			PW_LEFT = SERVO_PW;
 		}
 
 	}
@@ -134,16 +136,16 @@ void main(void)
 	while(full == 1)
 	{
 		Steering_Servo();
-		printf("Are your wheels turned fully right? y if yes, n if no\r\n);
+		printf("Are your wheels turned fully right? y if yes, n if no\r\n");
 		x = 0;
 		while (x == 0)
 		{
-			x = getchar("");
+			x = getchar();
 		}
-		if x == "y"
+		if (x == 'y')
 		{
 			full = 0;
-			PW_RIGHT = PW;
+			PW_RIGHT = SERVO_PW;
 		}
 	}
 	/***********************/
@@ -257,21 +259,22 @@ void update_speed(void)
 void Steering_Servo(void)
 {
 	printf("Press l or r on your keyboard to turn the wheels left or right/r/n");
-	unsigned char x = 0;
+	x = 0;
 	while(x == 0)
 	{
-		x = getchar("");
+		getchar();
+		x = 1;
 	}
-	if x == "r"
+	if (x == 'r')
 	{
-		PW += step;
+		SERVO_PW += step;
 
 	}
-	if x == "l"
+	if (x == 'l')
 	{
-		PW -= step;
+		SERVO_PW -= step;
 	}
-	printf("%u\r\n",PW);
+	printf("%u\r\n",SERVO_PW);
 }
 /***********************/
 //part3 functions
