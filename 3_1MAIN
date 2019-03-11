@@ -268,11 +268,18 @@ void Steering_Servo(void)
 	if (x == 'r')
 	{
 		SERVO_PW += step;
-
+		if (SERVO_PW > PW_MAX)
+		{
+			SERVO_PW = PW_MAX;
+		}
 	}
 	if (x == 'l')
 	{
 		SERVO_PW -= step;
+		if (SERVO_PW < PW_MIN)
+		{
+			SERVO_PW = PW_MIN;
+		}
 	}
 	printf("%u\r\n",SERVO_PW);
 }
